@@ -16,12 +16,16 @@ public class Deque<Item> implements Iterable<Item> {
         first = null;
         last = null;
     }
+
     public boolean isEmpty() {
+
         return first == null;
     }
+
     public int size() {
         return size;
     }
+
     public void addFirst(Item item) {
 
         Node oldFirst = first;
@@ -31,6 +35,9 @@ public class Deque<Item> implements Iterable<Item> {
         if (oldFirst != null) {
             oldFirst.previous = first;
         }
+        else {
+            last = first;
+        }
         size++;
 
     }
@@ -38,16 +45,25 @@ public class Deque<Item> implements Iterable<Item> {
         Node oldLast = last;
         last = new Node();
         last.item = item;
-        last.next = null;
-        oldLast.next = last;
-        last.previous = oldLast;
+        if (oldLast != null) {
+            oldLast.next = last;
+            last.previous = oldLast;
+        }
+        else {
+            first = last;
+        }
         size++;
     }
 
     public Item removeFirst() {
         Item removedItem = first.item;
-        first = first.next;
-        first.previous = null;
+        if (first.next != null) {
+            first = first.next;
+            first.previous = null;
+        }
+        else {
+            first = null;
+        }
         size--;
         return removedItem;
     }
@@ -96,5 +112,55 @@ public class Deque<Item> implements Iterable<Item> {
         assert (s.equals(stringToAdd));
         assert (deque.isEmpty());
 
+        deque.addLast(stringToAdd);
+        assert (deque.size == 1);
+        s = deque.removeLast();
+        assert (s.equals(stringToAdd));
+        assert (deque.isEmpty());
+
+        deque.addLast("First");
+        deque.addFirst("Second");
+        assert (deque.size == 2);
+        s = deque.removeFirst();
+        assert (s.equals("Second"));
+        s = deque.removeFirst();
+        assert (s.equals("First"));
+        assert (deque.isEmpty());
+
+        for (int i = 0; i < 10; i++) {
+            String string = String.valueOf(i);
+            if (i%2 == 0) {
+
+                deque.addFirst(string);
+            }
+            else {
+
+                deque.addLast(string);
+            }
+        }
+
+        for (String item : deque) {
+            StdOut.println(item);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (i%2 == 0) {
+
+                String string = deque.removeFirst();
+                StdOut.print(string + " ");
+            }
+            else {
+
+                String string = deque.removeLast();
+                StdOut.print(string + " ");
+            }
+        }
+
+        StdOut.println();
+        assert (deque.isEmpty());
+
+        for (String item : deque) {
+            StdOut.println(item);
+        }
     }   // unit testing (optional)
 }

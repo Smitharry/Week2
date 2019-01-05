@@ -6,23 +6,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private int size;
     private int headOfQueue;
     private int tailOfQueue;
-    /*    public class FixedCapacityStackOfStrings
-    {
-        private String[] s;
-        private int N = 0;
 
-        public FixedCapacityStackOfStrings(int capacity)
-        { s = new String[capacity]; }
-
-        public boolean isEmpty()
-        { return N == 0; }
-
-        public void push(String item)
-        { s[N++] = item; }
-
-        public String pop()
-        { return s[--N]; }
-    } */
     public RandomizedQueue() {
         Item[] randomizedQueue = (Item[]) new Object[1];
         size = 0;
@@ -35,31 +19,95 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     public int size() {
+
         return size;
     }
 
-    public void enqueue(Item item) {
+    public void enqueue(Item item) throws java.lang.IllegalArgumentException {
+        if (item == null) {
+            throw new java.lang.IllegalArgumentException();
+        }
         if (tailOfQueue > randomizedQueue.length) {
             resizeQueue(2 * randomizedQueue.length);
         }
-        randomizedQueue[tailOfQueue++] = item;
+        int itemPosition = StdRandom.uniform(size);
+
+        if (itemPosition == size) {
+            randomizedQueue[tailOfQueue++] = item;
+        } else {
+            Item itemToSwap = randomizedQueue[itemPosition + headOfQueue];
+            randomizedQueue[itemPosition + headOfQueue] = item;
+            randomizedQueue[tailOfQueue++] = itemToSwap;
+        }
         size++;
     }
-    public Item dequeue() {
 
+    public Item dequeue() throws java.util.NoSuchElementException{
+        if (isEmpty()) {
+            throw new java.util.NoSuchElementException();
+        }
+        if (size < randomizedQueue.length / 4) {
+            resizeQueue(randomizedQueue.length / 2);
+        }
+        Item itemToReturn = randomizedQueue[headOfQueue];
+        randomizedQueue[headOfQueue] = null;
+        headOfQueue++;
+        size--;
+        return itemToReturn;
     }
 
-    public Item sample()  {
+    public Item sample() throws java.util.NoSuchElementException {
+        if (isEmpty()) {
+            throw new java.util.NoSuchElementException();
+        }
         int itemPosition = StdRandom.uniform(size);
 
         return randomizedQueue[itemPosition + headOfQueue];
     }
+
     public Iterator<Item> iterator() {
-        return Iterator<Item>;
+
+        return new ArrayIterator();
     }
 
-    private void resizeQueue (int capacity)
-    {
+    private class ArrayIterator implements Iterator<Item> {
+        private int currentPosition;
+        private Item[] iteratorArray = (Item[]) new Object[size];
+
+        ArrayIterator() {
+
+            int counter = 0;
+            currentPosition = 0;
+
+            for (int i = headOfQueue; i < tailOfQueue; i++) {
+                int itemPosition = StdRandom.uniform(counter);
+                if (itemPosition == counter) {
+                    iteratorArray[counter++] = randomizedQueue[i];
+                } else {
+                    Item itemToSwap = iteratorArray[itemPosition];
+                    iteratorArray[itemPosition] = randomizedQueue[i];
+                    iteratorArray[counter++] = itemToSwap;
+                }
+            }
+        }
+
+        public boolean hasNext() {
+            return currentPosition < iteratorArray.length;
+        }
+
+        public void remove() throws java.lang.UnsupportedOperationException {
+            throw new java.lang.UnsupportedOperationException();
+        }
+
+        public Item next() throws java.util.NoSuchElementException {
+            if (!hasNext()) {
+                throw new java.util.NoSuchElementException();
+            }
+            return iteratorArray[currentPosition++];
+        }
+    }
+
+    private void resizeQueue(int capacity) {
         Item[] copy = (Item[]) new Object[capacity];
         int itemPosition = 0;
         for (int i = headOfQueue; i < tailOfQueue; i++)

@@ -20,26 +20,26 @@ public class RandomizedQueueTest {
         int item = rq.sample();
         boolean isPresent = false;
 
-        for(int number : rq) {
-            if (number == item) {
+        for(Integer number : rq) {
+            if (number == (Integer) item) {
                 isPresent = true;
             }
         }
 
         assert(isPresent);
 
-        int deletedItem = rq.sample();
+        int deletedItem = rq.dequeue();
         boolean isAbsent = true;
 
-        for(int number : rq) {
-            if (number == deletedItem) {
+        for(Integer number : rq) {
+            if (number == (Integer) deletedItem) {
                 isAbsent = false;
             }
         }
         assert(isAbsent);
 
         int counter = 0;
-        if (deletedItem == 1) {
+        if (deletedItem == 0) {
             counter++;
         }
         for(int i = 1; i < 3; i++) {
@@ -54,7 +54,7 @@ public class RandomizedQueueTest {
     }
 
     public static void iteratorTest () {
-        RandomizedQueue<Integer> rq = new RandomizedQueue<Integer>();
+        RandomizedQueue<Integer> rq = new RandomizedQueue<>();
         int counter = 0;
 
         for(int i = 0; i < 3; i++) {
@@ -66,8 +66,8 @@ public class RandomizedQueueTest {
 
         while (firstIterator.hasNext() && secondIterator.hasNext())
         {
-            int firstItem = firstIterator.next();
-            int secondItem = secondIterator.next();
+            Integer firstItem = firstIterator.next();
+            Integer secondItem = secondIterator.next();
             if (firstItem == secondItem) {
                 counter++;
             }
